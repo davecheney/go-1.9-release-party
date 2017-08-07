@@ -2,7 +2,7 @@
 
 [View this presentation online](https://talks.godoc.org/github.com/davecheney/go-1.9-release-party/presentation.slide)
 
-This repository is a companion to the [Go 1.9 release party](https://github.com/golang/go/wiki/Go-1.9-Release-Party) on Feb 16, 2017.
+This repository is a companion to the [Go 1.9 release party](https://github.com/golang/go/wiki/Go-1.9-Release-Party) on August 24, 2017.
 
 ## Contributing
 
