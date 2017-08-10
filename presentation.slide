@@ -54,7 +54,11 @@ After being rolled back before the Go 1.8 freeze, aliases are being re-proposed 
 
 .link https://golang.org/design/18130-type-alias
 
+* Type Aliases (example)
+
 .play -edit examples/alias.go
+
+TODO(dfc) need a better example
 
 * Ports
 
@@ -154,6 +158,10 @@ Specifically, code that directly iterates over the PC slice and uses functions s
 Code that queries a single caller at a specific depth should use Caller rather than passing a slice of length 1 to Callers.
 
 runtime.CallersFrames has been available since Go 1.7, so code can be updated prior to upgrading to Go 1.9.
+ 
+* Plugins
+
+Not much has changed, still lots to do
 
 * Tool changes
 
@@ -161,20 +169,7 @@ runtime.CallersFrames has been available since Go 1.7, so code can be updated pr
 
 * getgo
 
-... disapointed they didn't name it _upgoer_
-
-
-* Runtime changes
-
-* Plugins
-
-Not much has changed, still lots to do
-
-* What's coming up in Go 1.9
-
-Before we close, let's quickly touch on some of the things coming up in Go 1.9
-
-_note_: All of these are speculation, nothing is set in stone until code hits the repo.
+ ... disapointed they didn't name it _upgoer_
 
 * Improvements to the inliner
 
@@ -226,6 +221,12 @@ Go 1.10
 
 Yup! 
 
+* What's coming up in Go 1.10
+
+Before we close, let's quickly touch on some of the things coming up in Go 1.9
+
+_note_: All of these are speculation, nothing is set in stone until code hits the repo.
+
 * Go.future
 
 Talk about Go 2
@@ -239,5 +240,5 @@ Talk about Go 2
 
 Upgrade to Go 1.9, now!
 
-I know I said this last time, but it's literally the best version of Go, _ever_.
+I know I said this last time, but it's still true that it's literally the best version of Go so far.
 
