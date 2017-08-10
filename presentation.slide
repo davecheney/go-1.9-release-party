@@ -158,6 +158,14 @@ Specifically, code that directly iterates over the PC slice and uses functions s
 Code that queries a single caller at a specific depth should use Caller rather than passing a slice of length 1 to Callers.
 
 runtime.CallersFrames has been available since Go 1.7, so code can be updated prior to upgrading to Go 1.9.
+
+* Improvements to the inliner
+
+Inlining has historically been limited to leaf functions because of the concern of agressive inlining on the call graph.
+
+In support of this Robert Griesemer and Matthew Dempsky have been improving the line number tracking in Go 1.9 to make it flexible enough to lift the restriction on non-leaf functions.
+
+.link https://github.com/golang/go/issues/17566 Issue 17566
  
 * Plugins
 
@@ -170,18 +178,6 @@ Not much has changed, still lots to do
 * getgo
 
  ... disapointed they didn't name it _upgoer_
-
-* Improvements to the inliner
-
-Inlining has historically been limited to leaf functions because of the concern of agressive inlining on the call graph.
-
-In support of this Robert Griesemer and Matthew Dempsky have been improving the line number tracking in Go 1.9 to make it flexible enough to lift the restriction on non-leaf functions.
-
-An unnamed intern has been hired to work on the inliner for 1.9.
-
-Josh Bleecher-Snyder has also suggest that the cost model for inlining should be revised to make sure inlining is paying for itself.
-
-.link https://github.com/golang/go/issues/17566 Issue 17566
 
 * A user level poller
 
