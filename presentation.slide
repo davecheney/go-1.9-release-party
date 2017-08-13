@@ -166,6 +166,19 @@ Inlining has historically been limited to leaf functions because of the concern 
 In support of this Robert Griesemer and Matthew Dempsky have been improving the line number tracking in Go 1.9 to make it flexible enough to lift the restriction on non-leaf functions.
 
 .link https://github.com/golang/go/issues/17566 Issue 17566
+
+* runtime poller improvements
+
+Go has used epoll/kqueue/poll/select for _network_sockets_ for years.
+
+Reads/Writes to other file descriptors have traditionally consumed an OS thread during operation
+
+Ian Lance Taylor landed a refactor that broken our the `runtime` polling subsystem and extended to work for the rest of the `os` package.
+
+.link https://go-review.googlesource.com/#/c/36799/ net: refactor poller into new internal/poll package
+.link https://go-review.googlesource.com/#/c/36800/ os: use poller for file I/O 
+
+There is no sign of a programmer accessible poller, yet.
  
 * Plugins
 
@@ -179,18 +192,18 @@ Not much has changed, still lots to do
 
  ... disapointed they didn't name it _upgoer_
 
-* A user level poller
+* Changes to the standard library
 
-Go has used epoll/kqueue/poll/select for _network_sockets_ for years.
+* Transparent Monotonic Time support
 
-Reads/Writes to other file descriptors have traditionally consumed an OS thread during operation
+The time package now transparently tracks monotonic time in each Time value, making computing durations between two Time values a safe operation in the presence of wall clock adjustments. See the package docs and design document for details.
 
-Recently Ian Lance Taylor landed a refactor that broken our the `runtime` polling subsystem and extended to work for the rest of the `os` package.
+If a Time value has a monotonic clock reading, its string representation (as returned by String) now includes a final field "m=±value", where value is the monotonic clock reading formatted as a decimal number of seconds.
 
-.link https://go-review.googlesource.com/#/c/36799/ net: refactor poller into new internal/poll package
-.link https://go-review.googlesource.com/#/c/36800/ os: use poller for file I/O 
+The new methods Duration.Round and Duration.Truncate handle rounding and truncating durations to multiples of a given duration.
 
-There is no sign of a programmer accessible poller, yet.
+.link https://tip.golang.org/pkg/time/#hdr-Monotonic_Clocks
+.link https://golang.org/design/12914-monotonic
 
 * sync.Map
 
@@ -207,7 +220,15 @@ Where implemented by ssa backends, the `math/bits` functions are replaced by a n
 
 * testing.Helper()
 
+The new (*T).Helper and (*B).Helper methods mark the calling function as a test helper function. When printing file and line information, that function will be skipped. This permits writing test helper functions while still having useful line numbers for users.
+
 Use it to exclude testing helpers from `t.Errorf()` and `t.Fatalf()` tracebacks.
+
+TODO(dfc) needs example
+
+* And much more ...
+
+.link https://tip.golang.org/doc/go1.9#minor_library_changes
 
 * Go 1.next
 

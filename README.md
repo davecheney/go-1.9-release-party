@@ -12,6 +12,7 @@ In particular we're looking for:
 
 - Detailed explanations, _with code!_, of new features or changes. If you have a code example or sample code, consider placing them in another repository and linking to it from this presentation.
 - Performance reports and graphs from _production_ environments showing the impact of Go 1.9.
+- Links, links, URLs, citations, and links.
 
 If you don't know where to start, [please consult the list of open issues](https://github.com/davecheney/go-1.9-release-party/issues) or grep the presentation for `TODO`.
 
