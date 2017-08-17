@@ -21,13 +21,13 @@ If you have suggestions or corrections to this presentation, please raise [[http
 
 Go 1.9 isn't released, yet. 🙁
 
-But, it's _very_ close, so for all intents and purposes, Go 1.9 is here!
+But, it is _very_ close, so for all intents and purposes, Go 1.9 is here!
 
 # TODO .link https://t.co/cIEsMPeY0k Go 1.9 Announcement 
 
 Go 1.9 is the 10th release in the Go 1 series. It follows from the previous version, Go 1.8, [[https://blog.golang.org/go1.8][released on the 16th of February, 2016]]
 
-.link http://golang.org/doc/go1.9 Draft Go 1.9 Release Notes
+.link http://beta.golang.org/doc/go1.9 Draft Go 1.9 Release Notes
 
 * What's happened in the last six months?
 
@@ -36,8 +36,7 @@ What's changed?
 - Language changes
 - Ports
 - Performance
-- Compiler changes
-- Tool changes
+- Toolchain changes
 - Runtime changes
 - Changes to the standard library
 
@@ -45,19 +44,22 @@ What's changed?
 
 * Type Aliases
 
-Go now supports type aliases to support gradual code repair while moving a type between packages. The type alias design document and an article on refactoring cover the problem in detail. In short, a type alias declaration has the form:
+Go now supports type aliases to support gradual code repair while moving a type between packages.
+
+In short, a type alias declaration has the form:
 
  type T1 = T2
 
 This declaration introduces an alias name T1—an alternate spelling—for the type denoted by T2; that is, both T1 and T2 denote the same type.
 
+The type alias design document and an article on refactoring cover the problem in detail.
+
 .link https://golang.org/design/18130-type-alias Type alises design document.
+.link https://talks.golang.org/2016/refactor.article Codebase Refactoring (with help from Go).
 
 * Type Aliases (example)
 
-.play -edit examples/alias.go
-
-TODO(dfc) need a better example
+TODO(dfc) need example
 
 * Ports
 
@@ -90,7 +92,7 @@ Most programs should run a bit faster, due to speedups in the garbage collector 
 
 The `go` tool has always compiled `runtime.NumCPUs()` packages in parallel.
 
-With Go 1.9, a single package is now compiled in parallel.
+With Go 1.9, inside a single package functions are now compiled in parallel.
 
 Depending on the width and height of your dependency tree, and the number of cores available, this could give no speed up, or a measurable improvement.
 
@@ -108,7 +110,10 @@ shenanigans.
 
 If you _do_ want to test your code under `vendor/`, you can use something like
 
- go test ./... ./vendor/...
+ go test ./vendor/...
+
+.link https://github.com/golang/go/issues/19090
+.link https://tip.golang.org/doc/go1.9#vendor-dotdotdot
 
 * Default $GOROOT
 
@@ -118,17 +123,36 @@ This means that if the entire Go installation is moved to a new location, the go
 
 This is one less reason to need to explicitly set `$GOROOT`.
 
-Note that this does not affect the result of the runtime.GOROOT function, which will continue to report the original installation location; this may be fixed in later releases.
+_Note:_ this does not affect the result of the `runtime.GOROOT` function, which will continue to report the original installation location; this may be fixed in later releases.
 
 * go env -json
 
-The new go env -json flag enables JSON output, instead of the default OS-specific output format.
+The new `go`env`-json` flag enables JSON output, instead of the default OS-specific output format.
 
-TODO(dfc) example output
+ % go env -json 
+ {
+        "CC": "gcc",
+        "CGO_CFLAGS": "-g -O2",
+        "CGO_CPPFLAGS": "",
+        "CGO_CXXFLAGS": "-g -O2",
+        "CGO_ENABLED": "1",
+        "CGO_FFLAGS": "-g -O2",
+        "CGO_LDFLAGS": "-g -O2",
+        "CXX": "g++",
+        "GCCGO": "gccgo",
+        "GOARCH": "amd64",
+        "GOGCCFLAGS": "-fPIC -m64 -pthread -fmessage-length=0 -fdebug-prefix-map=/tmp/go-build254210362=/tmp/go-build -gno-record-gcc-switches",
+        "GOHOSTARCH": "amd64",
+        "GOHOSTOS": "linux",
+        "GOOS": "linux",
+        "GOPATH": "/home/dfc",
+        "GOROOT": "/home/dfc/go",
+        "GOTOOLDIR": "/home/dfc/go/pkg/tool/linux_amd64",
+ } 
 
 * go test -list 
 
-The go test command accepts a new -list flag, which takes a regular expression as an argument and prints to stdout the name of any tests, benchmarks, or examples that match it, without running them.
+The go test command accepts a new `-list` flag, which takes a regular expression as an argument and prints to stdout the name of any tests, benchmarks, or examples that match it, without running them.
 
  % go test -list Compare bytes
  TestCompare
@@ -149,19 +173,23 @@ The go test command accepts a new -list flag, which takes a regular expression a
 
 pprof has received some love.
 
-- Profiles produced by the runtime/pprof package now include symbol information, so they can be viewed in go tool pprof without the binary that produced the profile.
-- The go tool pprof command now uses the HTTP proxy information defined in the environment, using http.ProxyFromEnvironment.
-- pprof lables. TODO(dfc) need example 
+Profiles produced by the runtime/pprof package now include symbol information, so they can be viewed in go tool pprof without the binary that produced the profile.
+
+The go tool pprof command now uses the HTTP proxy information defined in the environment, using http.ProxyFromEnvironment.
+
+.link https://rakyll.org/profiler-labels/ Profiler labels in Go
+
+.image https://rakyll.org/img/pprof-labels-pdf.png _ 270
 
 * Compiler speed
 
-TODO(dfc) maybe a few % better on amd64.
+TODO(dfc) need final benchmark numbers, maybe a few % difference between 1.8.
 
 * Other toolchain improvements
 
 - Complex division is now C99-compatible. This has always been the case in gccgo and is now fixed in the gc toolchain.
 - The linker will now generate DWARF information for cgo executables on Windows.
-- The compiler now includes lexical scopes in the generated DWARF if the `-N -l` flags are provided, allowing debuggers to hide variables that are not in scope. The `.debug_info` section is now DWARF version 4.
+- The compiler now includes lexical scopes in the generated DWARF if the `-N`-l` flags are provided, allowing debuggers to hide variables that are not in scope. The `.debug_info` section is now DWARF version 4.
 - The values of `GOARM` and `GO386` now affect a compiled package's build ID, as used by the go tool's dependency caching.
 
 * Runtime changes
