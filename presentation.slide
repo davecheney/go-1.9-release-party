@@ -28,6 +28,7 @@ But, it is _very_ close, so for all intents and purposes, Go 1.9 is here!
 Go 1.9 is the 10th release in the Go 1 series. It follows from the previous version, Go 1.8, [[https://blog.golang.org/go1.8][released on the 16th of February, 2016]]
 
 .link http://beta.golang.org/doc/go1.9 Draft Go 1.9 Release Notes
+.link https://github.com/golang/go/issues/21297 The last minute blocker
 
 * What's happened in the last six months?
 
@@ -37,7 +38,6 @@ What's changed?
 - Ports
 - Performance
 - Toolchain changes
-- Runtime changes
 - Changes to the standard library
 
 * Language changes
@@ -52,14 +52,15 @@ In short, a type alias declaration has the form:
 
 This declaration introduces an alias name T1—an alternate spelling—for the type denoted by T2; that is, both T1 and T2 denote the same type.
 
-The type alias design document and an article on refactoring cover the problem in detail.
+The type alias design document and an article on re-factoring cover the problem in detail.
 
-.link https://golang.org/design/18130-type-alias Type alises design document.
-.link https://talks.golang.org/2016/refactor.article Codebase Refactoring (with help from Go).
+.link https://golang.org/design/18130-type-alias Type aliases design document.
+.link https://talks.golang.org/2016/refactor.article Code base Re-factoring (with help from Go).
 
-* Type Aliases (example)
-
-TODO(dfc) need example
+#* Type Aliases (example)
+#
+#
+#.play -edit examples/type-aliases.go
 
 * Ports
 
@@ -67,7 +68,7 @@ No new ports were added during 1.9, however there have been some changes to the 
 
 - ppc64 Big and Little Endian require Power8 hardware. Unless you're running Go on a PowerMac G5, this doesn't affect you.
 - Go 1.9 is the last release to support FreeBSD 9.3. Go 1.10 will require FreeBSD 10.3 or later.
-- Go 1.9 requires OpenBSD 6.0 or later. OpenBSD 5.9 is no longer supported (but it's not supported by OpenBSD either, ᕕ( ᐛ )ᕗ).
+- Go 1.9 requires OpenBSD 6.0 or later. OpenBSD 5.9 is no longer supported (but it's not supported by the OpenBSD project either, ᕕ( ᐛ )ᕗ).
 
 * Performance
 
@@ -77,12 +78,14 @@ As always, the changes are so general and varied that precise statements about p
 
 Most programs should run a bit faster, due to speedups in the garbage collector and optimizations in the standard library.
 
+Do you have a Go 1.9 performance story to tell? Blog it, and I'll retweet the crap out of it.
+
 * Garbage collector specific 
 
 - Library functions that used to trigger stop-the-world garbage collection now trigger concurrent garbage collection. Specifically, `runtime.GC`, `debug.SetGCPercent`, and `debug.FreeOSMemory`, now trigger concurrent garbage collection, blocking only the calling goroutine until the garbage collection is done.
 - The `debug.SetGCPercent` function only triggers a garbage collection if one is immediately necessary because of the new `GOGC` value. This makes it possible to adjust `GOGC` on-the-fly.
 - Large object allocation performance is significantly improved in applications using large (>50GB) heaps containing many large objects.
-- In Go 1.8 the cost of calling `runtime.MemStats` is propotional to the size of the heap; Austin recently timed it at ~1.7ms per Gb. In Go 1.9 the function now takes less than 100µs even for very large heaps.
+- In Go 1.8 the cost of calling `runtime.MemStats` is proportional to the size of the heap; Austin recently timed it at ~1.7ms per Gb. In Go 1.9 the function now takes less than 100µs even for very large heaps.
 
 .link https://golang.org/issue/13613
 
@@ -175,15 +178,15 @@ pprof has received some love.
 
 Profiles produced by the runtime/pprof package now include symbol information, so they can be viewed in go tool pprof without the binary that produced the profile.
 
-The go tool pprof command now uses the HTTP proxy information defined in the environment, using http.ProxyFromEnvironment.
+ % go test -test.run=xxx -test.bench=Max strings -test.cpuprofile=c.p
+ BenchmarkSingleMaxSkipping-4     2000000               912 ns/op        10964.09 MB/s
+ PASS
+ ok      strings 3.054s
+ % go tool pprof c.p
+
+The `go`tool`pprof` command now uses the HTTP proxy information defined in the environment, using `http.ProxyFromEnvironment`.
 
 .link https://rakyll.org/profiler-labels/ Profiler labels in Go
-
-.image https://rakyll.org/img/pprof-labels-pdf.png _ 270
-
-* Compiler speed
-
-TODO(dfc) need final benchmark numbers, maybe a few % difference between 1.8.
 
 * Other toolchain improvements
 
@@ -198,11 +201,11 @@ TODO(dfc) need final benchmark numbers, maybe a few % difference between 1.8.
 
 Inlining has historically been limited to leaf functions because of the concern of agressive inlining on stack trace output.
 
-Robert Griesemer and Matthew Dempsky have been improving the line number tracking in Go 1.9 to make it flexible enough to lift the restriction on non-leaf functions.
+Robert Griesemer and Matthew Dempsky have been improving the line number tracking in Go 1.9 to make it flexible enough to lift the restriction on non-leaf functions. This is known as _mid-stack_inlining_.
 
 The result is `runtime.Callers` is *deprecated*. This is because an individual element of the PC slice cannot account for inlined frames or other nuances of the call stack. Specifically, code that directly iterates over the PC slice and uses functions such as runtime.FuncForPC to resolve each PC individually will miss inlined frames.
 
-To get a complete view of the stack, such code should instead use `runtime.CallersFrames`. Likewise, code should not assume that the length returned by `Callers` is any indication of the call depth. It should instead count the number of frames returned by CallersFrames.
+To get a complete view of the stack, such code should instead use `runtime.CallersFrames`. Likewise, code should not assume that the length returned by `Callers` is any indication of the call depth.
 
 `runtime.CallersFrames` has been available since Go 1.7, so code can be updated prior to upgrading to Go 1.9.
 
@@ -212,22 +215,19 @@ To get a complete view of the stack, such code should instead use `runtime.Calle
 
 Go has used epoll/kqueue/poll/select for _network_sockets_ for years.
 
-Reads/Writes to other file descriptors have traditionally consumed an OS thread during operation
+Reads/Writes to other file descriptors have traditionally consumed a thread during operation.
 
 Ian Lance Taylor landed a refactor that broke out the `runtime` polling subsystem and extended to work for the rest of the `os` package.
 
-.link https://go-review.googlesource.com/#/c/36799/ net: refactor poller into new internal/poll package
-.link https://go-review.googlesource.com/#/c/36800/ os: use poller for file I/O 
-
-There is no sign of a programmer accessible poller, yet.
+The `os` package now uses the internal runtime poller for file I/O. This reduces the number of threads required for read/write operations on pipes, and it eliminates races when one goroutine closes a file while another is using the file for I/O.
  
 * Plugins
 
 Not much has changed, still lots to do.
 
-* Tool changes
+# * Tool changes
 
-* go tool trace
+# * go tool trace
 
 * Go one-line installer
 
@@ -237,15 +237,15 @@ Jess Frazelle and Chris Broadford have been working on a one line binary install
 
 The installer is designed to both install Go as well as do the initial configuration of setting up the right environment variables and paths.
 
-Personally I'm disapointed they didn't name it _upgoer_.
+Personally, I'm a little disapointed they didn't name it _upgoer_.
 
 * Changes to the standard library
 
 * Transparent Monotonic Time support
 
-The time package now transparently tracks monotonic time in each Time value, making computing durations between two Time values a safe operation in the presence of wall clock adjustments. See the package docs and design document for details.
+The time package now transparently tracks monotonic time in each `Time` value, making computing durations between two `Time` values a safe operation in the presence of wall clock adjustments.
 
-If a Time value has a monotonic clock reading, its string representation (as returned by String) now includes a final field "m=±value", where value is the monotonic clock reading formatted as a decimal number of seconds.
+If a `Time` value has a monotonic clock reading, its string representation (as returned by `String`) now includes a final field "m=±value", where value is the monotonic clock reading formatted as a decimal number of seconds.
 
 The new methods Duration.Round and Duration.Truncate handle rounding and truncating durations to multiples of a given duration.
 
@@ -254,12 +254,12 @@ The new methods Duration.Round and Duration.Truncate handle rounding and truncat
 
 * time.String (cont.)
 
-.play examples/time-string.go
+.play -edit examples/time-string.go
 
 Just as you shouldn't compare `t1`==`t2` because they may be in a different timezone, you shouldn't also compare `t1.String()`==`t2.String()`.
 
 - To compare times, use `time.Equal()`
-- To serialise times, time implements Marshal.
+- When serialising `time.Time` values `time.MarshalBinary`, `timet.MarshalJSON`, and `time.MarshalText` elide the monotonic component.
 
 .link https://www.youtube.com/watch?v=OuT8YYAOOVI Joe Tsai, Forward Compatible Go Code (GopherCon 2017)
 
@@ -272,8 +272,8 @@ The `sync` package has a new type, `sync.Map`
 `sync.Map` is _not_ a general purpose replacement for `map`.
 
 .link https://github.com/golang/go/issues/18177
-.link https://www.youtube.com/watch?v=C1EtfDnsdDs GopherCon 2017 - Lightning Talk: Bryan C Mills - An overview of sync.Map
-.link https://github.com/gophercon/2017-talks/blob/master/lightningtalks/BryanCMills-AnOverviewOfSyncMap/An%20Overview%20of%20sync.Map.pdf Slides
+.link https://www.youtube.com/watch?v=C1EtfDnsdDs Lightning Talk: Bryan C Mills - An overview of sync.Map (GopherCon 2017)
+.link https://github.com/gophercon/2017-talks/blob/master/lightningtalks/BryanCMills-AnOverviewOfSyncMap/An%20Overview%20of%20sync.Map.pdf Lightning Talk: Bryan C Mills - An overview of sync.Map (Slides)
 
 * math/bits
 
@@ -283,6 +283,10 @@ As an experiment in addressing the needs of low level crypto and bit twiddling n
 
 Where implemented by SSA backends, the `math/bits` functions are replaced by a native sequence of instructions. When no specific instruction exists, or is not implemented, the compiler treats the `math/bits` package as normal Go code.
 
+.link https://tip.golang.org/pkg/math/bits/ math/bits
+
+.play -edit examples/math-bits.go /START/,/END/
+
 * testing.Helper()
 
 The new (*T).Helper and (*B).Helper methods mark the calling function as a test helper function. When printing file and line information, that function will be skipped. This permits writing test helper functions while still having useful line numbers for users.
@@ -291,7 +295,7 @@ Use it to exclude testing helpers from `t.Errorf()` and `t.Fatalf()` tracebacks.
 
 * testing.Helper() (cont.)
 
-.play examples/testing-helper.go /START/,/END/ 
+.play -edit examples/testing-helper.go /START/,/END/ 
 
 * And much more ...
 
