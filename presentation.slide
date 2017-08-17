@@ -293,8 +293,6 @@ The new `(*T).Helper` and `(*B).Helper` methods mark the calling function as a t
 
 Use it to exclude testing helpers from `t.Errorf()` and `t.Fatalf()` tracebacks.
 
-* testing.Helper() (cont.)
-
 .play -edit examples/testing-helper.go /START/,/END/ 
 
 * And much more ...
@@ -314,23 +312,15 @@ The next release of Go will be ... wait for it ...
 
 Go 1.10
 
-Yup! 
-
-* What's coming up in Go 1.10
-
-Before we close, let's quickly touch on some of the things coming up in Go 1.9
-
-_note_: All of these are speculation, nothing is set in stone until code hits the repo.
-
 * dep
 
 The official experiment.
 
 .link https://github.com/golang/dep
 
-Try it, use it, tag your repositories.
+Try it, use it, start making releases, start tagging your releases.
 
-.link https://www.youtube.com/watch?v=5LtMb090AZI - Sam Boyer, GopherCon 2017
+.link https://www.youtube.com/watch?v=5LtMb090AZI Sam Boyer, GopherCon 2017
 .link https://dave.cheney.net/2016/06/24/gophers-please-tag-your-releases
 
 * Go.future
