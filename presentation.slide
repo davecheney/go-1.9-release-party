@@ -196,17 +196,15 @@ TODO(dfc) need final benchmark numbers, maybe a few % difference between 1.8.
 
 * Call stacks with inlined frames 
 
-Inlining has historically been limited to leaf functions because of the concern of agressive inlining on the call graph.
+Inlining has historically been limited to leaf functions because of the concern of agressive inlining on stack trace output.
 
 Robert Griesemer and Matthew Dempsky have been improving the line number tracking in Go 1.9 to make it flexible enough to lift the restriction on non-leaf functions.
 
-Users of runtime.Callers should avoid directly inspecting the resulting PC slice and instead use runtime.CallersFrames. This is because an individual element of the PC slice cannot account for inlined frames or other nuances of the call stack. Specifically, code that directly iterates over the PC slice and uses functions such as runtime.FuncForPC to resolve each PC individually will miss inlined frames.
+The result is `runtime.Callers` is *deprecated*. This is because an individual element of the PC slice cannot account for inlined frames or other nuances of the call stack. Specifically, code that directly iterates over the PC slice and uses functions such as runtime.FuncForPC to resolve each PC individually will miss inlined frames.
 
-To get a complete view of the stack, such code should instead use CallersFrames. Likewise, code should not assume that the length returned by Callers is any indication of the call depth. It should instead count the number of frames returned by CallersFrames.
+To get a complete view of the stack, such code should instead use `runtime.CallersFrames`. Likewise, code should not assume that the length returned by `Callers` is any indication of the call depth. It should instead count the number of frames returned by CallersFrames.
 
-Code that queries a single caller at a specific depth should use Caller rather than passing a slice of length 1 to Callers.
-
-runtime.CallersFrames has been available since Go 1.7, so code can be updated prior to upgrading to Go 1.9.
+`runtime.CallersFrames` has been available since Go 1.7, so code can be updated prior to upgrading to Go 1.9.
 
 .link https://github.com/golang/go/issues/17566 Issue 17566
 
@@ -216,7 +214,7 @@ Go has used epoll/kqueue/poll/select for _network_sockets_ for years.
 
 Reads/Writes to other file descriptors have traditionally consumed an OS thread during operation
 
-Ian Lance Taylor landed a refactor that broken out the `runtime` polling subsystem and extended to work for the rest of the `os` package.
+Ian Lance Taylor landed a refactor that broke out the `runtime` polling subsystem and extended to work for the rest of the `os` package.
 
 .link https://go-review.googlesource.com/#/c/36799/ net: refactor poller into new internal/poll package
 .link https://go-review.googlesource.com/#/c/36800/ os: use poller for file I/O 
@@ -260,13 +258,17 @@ Just as you shouldn't compare `t1 == t2` because they may be in a different time
 - not a general purpose concurrent map
 - link presentation and video by Bryan Mills
 
+.link https://github.com/golang/go/issues/18177
+.link https://www.youtube.com/watch?v=C1EtfDnsdDs GopherCon 2017 - Lightning Talk: Bryan C Mills - An overview of sync.Map
+.link https://github.com/gophercon/2017-talks/blob/master/lightningtalks/BryanCMills-AnOverviewOfSyncMap/An%20Overview%20of%20sync.Map.pdf Slides
+
 * math/bits
 
 As an experiment in addressing the needs of low level crypto and bit twiddling needs of package writers, Go 1.9 includes a new package, `math/bits`.
 
 `math/bits` contains functions to operate on values representing bit shifts, rotates, masks, and counts.
 
-Where implemented by ssa backends, the `math/bits` functions are replaced by a native sequence of instructions. When no specific instruction exists, or is not implemented, the compiler treats the `math/bits` package as normal Go code.
+Where implemented by SSA backends, the `math/bits` functions are replaced by a native sequence of instructions. When no specific instruction exists, or is not implemented, the compiler treats the `math/bits` package as normal Go code.
 
 * testing.Helper()
 
@@ -294,18 +296,40 @@ Before we close, let's quickly touch on some of the things coming up in Go 1.9
 
 _note_: All of these are speculation, nothing is set in stone until code hits the repo.
 
+* dep
+
+The official experiment.
+
+.link https://github.com/golang/dep
+
+Try it, use it, tag your repositories.
+
+.link https://www.youtube.com/watch?v=5LtMb090AZI - Sam Boyer, GopherCon 2017
+.link https://dave.cheney.net/2016/06/24/gophers-please-tag-your-releases
+
 * Go.future
 
-Talk about Go 2
+A GopherCon in July Russ Cox 
 
-- experience reports
-- random proposals don't count, you have to explain what the problem is _before_ you start talking about what you want to change.
+.link https://blog.golang.org/toward-go2 Towards Go 2 (blog.golang.org)
+.link https://www.youtube.com/watch?v=0Zbh_vmAKvk Russ Cox, The Future of Go (GopherCon 2017)
+
+"The conversation for Go 2 starts today, and it's one that will happen in the open, in public forums like the mailing list and the issue tracker. Please help us at every step along the way.
+
+"Today, what we need most is experience reports. Please tell us how Go is working for you, and more importantly not working for you. Write a blog post, include real examples, concrete detail, and real experience. And link it on our wiki page. That's how we'll start talking about what we, the Go community, might want to change about Go.
+.caption Russ Cox
+
+.link https://github.com/golang/go/wiki/ExperienceReports Experience Reports (Go wiki)
+
+# experience reports
+# random proposals don't count, you have to explain what the problem is _before_ you start talking about what you want to change.
 
 * Conclusion
 
 .image img/party-gopher.png
+.caption image credit Renee French
 
 Upgrade to Go 1.9, now!
 
-I know I said this last time, but it's still true that it's literally the best version of Go so far.
+I know I said this last time, but it's still true that Go 1.9 (will be) literally the best version of Go so far.
 
