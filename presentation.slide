@@ -197,15 +197,15 @@ The `go`tool`pprof` command now uses the HTTP proxy information defined in the e
 
 * Runtime changes
 
-* Call stacks with inlined frames 
+* Mid-stack inlining
 
 Inlining has historically been limited to leaf functions because of the concern of aggressive inlining on stack trace output.
 
-Robert Griesemer and Matthew Dempsky have been improving the line number tracking in Go 1.9 to make it flexible enough to lift the restriction on non-leaf functions. This is known as _mid-stack_inlining_.
+Users of `runtime.Callers` should avoid directly inspecting the resulting PC slice and instead use `runtime.CallersFrames` to get a complete view of the call stack, or `runtime.Caller` to get information about a single caller. This is because an individual element of the PC slice cannot account for inlined frames or other nuances of the call stack.
 
-The result is `runtime.Callers` is now inaccurate. This is because an individual element of the PC slice cannot account for inlined frames or other nuances of the call stack. Specifically, code that directly iterates over the PC slice and uses functions such as runtime.FuncForPC to resolve each PC individually will miss inlined frames.
+Specifically, code that directly iterates over the PC slice and uses functions such as `runtime.FuncForPC` to resolve each PC individually will miss inlined frames. To get a complete view of the stack, such code should instead use `CallersFrames`.
 
-To get a complete view of the stack, such code should instead use `runtime.CallersFrames`. Likewise, code should not assume that the length returned by `Callers` is any indication of the call depth.
+Code that queries a single caller at a specific depth should use `Caller` rather than passing a slice of length 1 to `Callers`.
 
 `runtime.CallersFrames` has been available since Go 1.7, so code can be updated prior to upgrading to Go 1.9.
 
