@@ -289,7 +289,9 @@ The new (*T).Helper and (*B).Helper methods mark the calling function as a test 
 
 Use it to exclude testing helpers from `t.Errorf()` and `t.Fatalf()` tracebacks.
 
-TODO(dfc) needs example
+* testing.Helper() (cont.)
+
+.play examples/testing-helper.go /START/,/END/ 
 
 * And much more ...
 
