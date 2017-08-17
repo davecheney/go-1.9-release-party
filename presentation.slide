@@ -199,11 +199,11 @@ The `go`tool`pprof` command now uses the HTTP proxy information defined in the e
 
 * Call stacks with inlined frames 
 
-Inlining has historically been limited to leaf functions because of the concern of agressive inlining on stack trace output.
+Inlining has historically been limited to leaf functions because of the concern of aggressive inlining on stack trace output.
 
 Robert Griesemer and Matthew Dempsky have been improving the line number tracking in Go 1.9 to make it flexible enough to lift the restriction on non-leaf functions. This is known as _mid-stack_inlining_.
 
-The result is `runtime.Callers` is *deprecated*. This is because an individual element of the PC slice cannot account for inlined frames or other nuances of the call stack. Specifically, code that directly iterates over the PC slice and uses functions such as runtime.FuncForPC to resolve each PC individually will miss inlined frames.
+The result is `runtime.Callers` is now inaccurate. This is because an individual element of the PC slice cannot account for inlined frames or other nuances of the call stack. Specifically, code that directly iterates over the PC slice and uses functions such as runtime.FuncForPC to resolve each PC individually will miss inlined frames.
 
 To get a complete view of the stack, such code should instead use `runtime.CallersFrames`. Likewise, code should not assume that the length returned by `Callers` is any indication of the call depth.
 
@@ -306,12 +306,6 @@ Use it to exclude testing helpers from `t.Errorf()` and `t.Fatalf()` tracebacks.
 
 .link https://tip.golang.org/doc/go1.9#minor_library_changes
 
-* Go 1.next
-
-The next release of Go will be ... wait for it ...
-
-Go 1.10
-
 * dep
 
 The official experiment.
@@ -322,6 +316,10 @@ Try it, use it, start making releases, start tagging your releases.
 
 .link https://www.youtube.com/watch?v=5LtMb090AZI Sam Boyer, GopherCon 2017
 .link https://dave.cheney.net/2016/06/24/gophers-please-tag-your-releases
+
+* Go 1.next
+
+The next release of Go will be ... wait for it ... Go 1.10.
 
 * Go.future
 
