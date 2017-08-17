@@ -229,9 +229,15 @@ Not much has changed, still lots to do.
 
 * go tool trace
 
-* getgo
+* Go one-line installer
 
- ... disapointed they didn't name it _upgoer_
+Jess Frazelle and Chris Broadford have been working on a one line binary installer for Go.
+
+.link https://groups.google.com/forum/#!searchin/golang-dev/getgo%7Csort:relevance/golang-dev/QrchAUETfUI/pOOZFx-GAgAJ Go one-line installer
+
+The installer is designed to both install Go as well as do the initial configuration of setting up the right environment variables and paths.
+
+Personally I'm disapointed they didn't name it _upgoer_.
 
 * Changes to the standard library
 
@@ -248,15 +254,22 @@ The new methods Duration.Round and Duration.Truncate handle rounding and truncat
 
 * time.String (cont.)
 
-Just as you shouldn't compare `t1 == t2` because they may be in a different timezone, you shouldn't also compare `t1.String() == t2.String()`.
+.play examples/time-string.go
+
+Just as you shouldn't compare `t1`==`t2` because they may be in a different timezone, you shouldn't also compare `t1.String()`==`t2.String()`.
 
 - To compare times, use `time.Equal()`
 - To serialise times, time implements Marshal.
 
+.link https://www.youtube.com/watch?v=OuT8YYAOOVI Joe Tsai, Forward Compatible Go Code (GopherCon 2017)
+
 * sync.Map
 
-- not a general purpose concurrent map
-- link presentation and video by Bryan Mills
+The `sync` package has a new type, `sync.Map`
+
+`sync.Map` is a concurrent map with amortized-constant-time loads, stores, and deletes. It is safe for multiple goroutines to call a Map's methods concurrently.
+
+`sync.Map` is _not_ a general purpose replacement for `map`.
 
 .link https://github.com/golang/go/issues/18177
 .link https://www.youtube.com/watch?v=C1EtfDnsdDs GopherCon 2017 - Lightning Talk: Bryan C Mills - An overview of sync.Map
