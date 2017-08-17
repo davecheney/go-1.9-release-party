@@ -225,13 +225,17 @@ The `os` package now uses the internal runtime poller for file I/O. This reduces
 
 Not much has changed, still lots to do.
 
+David Crawshaw gave a great talk about all the ways that Go code can be built to interact with other languages, and itself (plugins) at GopherCon this year.
+
+.link https://www.youtube.com/watch?v=x-LhC-J2Vbk David Crawshaw - Go Build Modes (GopherCon 2017(
+
 # * Tool changes
 
 # * go tool trace
 
 * Go one-line installer
 
-Jess Frazelle and Chris Broadford have been working on a one line binary installer for Go.
+Jess Frazelle and Chris Broadfoot have been working on a one line binary installer for Go.
 
 .link https://groups.google.com/forum/#!searchin/golang-dev/getgo%7Csort:relevance/golang-dev/QrchAUETfUI/pOOZFx-GAgAJ Go one-line installer
 
@@ -269,7 +273,7 @@ The `sync` package has a new type, `sync.Map`
 
 `sync.Map` is a concurrent map with amortized-constant-time loads, stores, and deletes. It is safe for multiple goroutines to call a Map's methods concurrently.
 
-`sync.Map` is _not_ a general purpose replacement for `map`.
+`sync.Map` is _not_ a general purpose replacement for a `sync.Mutex`/`RWMutex` and the built in `map` type.
 
 .link https://github.com/golang/go/issues/18177
 .link https://www.youtube.com/watch?v=C1EtfDnsdDs Lightning Talk: Bryan C Mills - An overview of sync.Map (GopherCon 2017)
@@ -301,7 +305,6 @@ Use it to exclude testing helpers from `t.Errorf()` and `t.Fatalf()` tracebacks.
 - `crypto/x509` - On Unix systems the environment variables `SSL_CERT_FILE` and `SSL_CERT_DIR` can now be used to override the system default locations for the SSL certificate file and SSL certificate files directory, respectively.
 - `os/exec` - The `os/exec` package now de-duplicates environment variables in the `exec.Cmd.Env` slice.
 - `os/user` - `Lookup` and `LookupId` now work on Unix systems when `CGO_ENABLED=0` by reading the `/etc/passwd` file.
-- `sync` - `Mutex` is now more fair.
 - `text/template` - The handling of empty blocks, which was broken by a Go 1.8 change that made the result dependent on the order of templates, has been fixed.
 
 .link https://tip.golang.org/doc/go1.9#minor_library_changes
