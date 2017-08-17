@@ -289,7 +289,7 @@ Where implemented by SSA backends, the `math/bits` functions are replaced by a n
 
 * testing.Helper()
 
-The new (*T).Helper and (*B).Helper methods mark the calling function as a test helper function. When printing file and line information, that function will be skipped. This permits writing test helper functions while still having useful line numbers for users.
+The new `(*T).Helper` and `(*B).Helper` methods mark the calling function as a test helper function. When printing file and line information, that function will be skipped. This permits writing test helper functions while still having useful line numbers for users.
 
 Use it to exclude testing helpers from `t.Errorf()` and `t.Fatalf()` tracebacks.
 
@@ -298,6 +298,13 @@ Use it to exclude testing helpers from `t.Errorf()` and `t.Fatalf()` tracebacks.
 .play -edit examples/testing-helper.go /START/,/END/ 
 
 * And much more ...
+
+- `crypto/rand` - On Linux, Go now calls the getrandom system call without the `GRND_NONBLOCK` flag; it will now block until the kernel has sufficient randomness. 
+- `crypto/x509` - On Unix systems the environment variables `SSL_CERT_FILE` and `SSL_CERT_DIR` can now be used to override the system default locations for the SSL certificate file and SSL certificate files directory, respectively.
+- `os/exec` - The `os/exec` package now de-duplicates environment variables in the `exec.Cmd.Env` slice.
+- `os/user` - `Lookup` and `LookupId` now work on Unix systems when `CGO_ENABLED=0` by reading the `/etc/passwd` file.
+- `sync` - `Mutex` is now more fair.
+- `text/template` - The handling of empty blocks, which was broken by a Go 1.8 change that made the result dependent on the order of templates, has been fixed.
 
 .link https://tip.golang.org/doc/go1.9#minor_library_changes
 
