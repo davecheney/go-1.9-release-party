@@ -1,6 +1,6 @@
 Go 1.9 Release Party
 Sydney Go Users' Group
-25 Aug 2017
+17 Aug 2017
 
 Dave Cheney
 @davecheney
@@ -19,19 +19,19 @@ If you have suggestions or corrections to this presentation, please raise [[http
 
 * Go 1.9
 
-Go 1.9 is released!
+Go 1.9 isn't released, yet. 🙁
 
-.image img/rocket.jpg _ 350
+But, it's _very_ close, so for all intents and purposes, Go 1.9 is here!
 
-TODO .link https://t.co/cIEsMPeY0k Go 1.9 Announcement 
+# TODO .link https://t.co/cIEsMPeY0k Go 1.9 Announcement 
 
 Go 1.9 is the 10th release in the Go 1 series. It follows from the previous version, Go 1.8, [[https://blog.golang.org/go1.8][released on the 16th of February, 2016]]
 
-.link http://golang.org/doc/go1.9 Go 1.9 Release Notes
+.link http://golang.org/doc/go1.9 Draft Go 1.9 Release Notes
 
-* What's changed?
+* What's happened in the last six months?
 
-So, what's happened in the last six months?
+What's changed?
 
 - Language changes
 - Ports
@@ -47,12 +47,11 @@ So, what's happened in the last six months?
 
 Go now supports type aliases to support gradual code repair while moving a type between packages. The type alias design document and an article on refactoring cover the problem in detail. In short, a type alias declaration has the form:
 
-type T1 = T2
+ type T1 = T2
+
 This declaration introduces an alias name T1—an alternate spelling—for the type denoted by T2; that is, both T1 and T2 denote the same type.
 
-After being rolled back before the Go 1.8 freeze, aliases are being re-proposed for Go 1.9 in a more limited fashion.
-
-.link https://golang.org/design/18130-type-alias
+.link https://golang.org/design/18130-type-alias Type alises design document.
 
 * Type Aliases (example)
 
@@ -65,8 +64,8 @@ TODO(dfc) need a better example
 No new ports were added during 1.9, however there have been some changes to the support platforms.
 
 - ppc64 Big and Little Endian require Power8 hardware. Unless you're running Go on a PowerMac G5, this doesn't affect you.
-- Go 1.9 is the last release to support FreeBSD 9.3, Go 1.10 will require FreeBSD 10.3 or later.
-- Go 1.9 requires OpenBSD 6.0 or later, 5.9 is no longer supported.
+- Go 1.9 is the last release to support FreeBSD 9.3. Go 1.10 will require FreeBSD 10.3 or later.
+- Go 1.9 requires OpenBSD 6.0 or later. OpenBSD 5.9 is no longer supported (but it's not supported by OpenBSD either, ᕕ( ᐛ )ᕗ).
 
 * Performance
 
@@ -78,15 +77,12 @@ Most programs should run a bit faster, due to speedups in the garbage collector 
 
 * Garbage collector specific 
 
-- Library functions that used to trigger stop-the-world garbage collection now trigger concurrent garbage collection. Specifically, runtime.GC, debug.SetGCPercent, and debug.FreeOSMemory, now trigger concurrent garbage collection, blocking only the calling goroutine until the garbage collection is done.
-- The debug.SetGCPercent function only triggers a garbage collection if one is immediately necessary because of the new GOGC value. This makes it possible to adjust GOGC on-the-fly.
+- Library functions that used to trigger stop-the-world garbage collection now trigger concurrent garbage collection. Specifically, `runtime.GC`, `debug.SetGCPercent`, and `debug.FreeOSMemory`, now trigger concurrent garbage collection, blocking only the calling goroutine until the garbage collection is done.
+- The `debug.SetGCPercent` function only triggers a garbage collection if one is immediately necessary because of the new `GOGC` value. This makes it possible to adjust `GOGC` on-the-fly.
 - Large object allocation performance is significantly improved in applications using large (>50GB) heaps containing many large objects.
-- The cost of calling `runtime.MemStats` is propotional to the size of the heap; Austin recently timed it at ~1.7ms per Gb.
-- There is a CL ready to land that reduces it to 20 us per proc (thread servicing a goroutine) which is a much smaller upper bound.
+- In Go 1.8 the cost of calling `runtime.MemStats` is propotional to the size of the heap; Austin recently timed it at ~1.7ms per Gb. In Go 1.9 the function now takes less than 100µs even for very large heaps.
 
 .link https://golang.org/issue/13613
-
-The runtime.ReadMemStats function now takes less than 100µs even for very large heaps.
 
 * Toolchain improvements
 
@@ -94,27 +90,35 @@ The runtime.ReadMemStats function now takes less than 100µs even for very large
 
 The `go` tool has always compiled `runtime.NumCPUs()` packages in parallel.
 
-With Go 1.9, a single package is now compiled in parallel as well.
+With Go 1.9, a single package is now compiled in parallel.
 
 Depending on the width and height of your dependency tree, and the number of cores available, this could give no speed up, or a measurable improvement.
 
-Export `GO19CONCURRENTCOMPILATION=0` to disable this behaviour.
+ export GO19CONCURRENTCOMPILATION=0
 
-* `./...` no longer matches `vendor/...`
+disables this behaviour.
 
-Finally.
+* ./... no longer matches vendor/...
 
-No more `go test $(go list ./... | grep -v vendor)` shenanigans. 
+No more
+
+ go test $(go list ./... | grep -v vendor)
+
+shenanigans. 
 
 If you _do_ want to test your code under `vendor/`, you can use something like
 
-`go test ./... ./vendor/...`
+ go test ./... ./vendor/...
 
 * Default $GOROOT
 
-goroot is the default, using os.Exec("")
+The go tool will now use the path from which it was invoked to attempt to locate the root of the Go install tree.
 
-The go tool will now use the path from which it was invoked to attempt to locate the root of the Go install tree. This means that if the entire Go installation is moved to a new location, the go tool should continue to work as usual. This may be overriden by setting GOROOT in the environment, which should only be done in unusual circumstances. Note that this does not affect the result of the runtime.GOROOT function, which will continue to report the original installation location; this may be fixed in later releases.
+This means that if the entire Go installation is moved to a new location, the go tool should continue to work as usual.
+
+This is one less reason to need to explicitly set `$GOROOT`.
+
+Note that this does not affect the result of the runtime.GOROOT function, which will continue to report the original installation location; this may be fixed in later releases.
 
 * go env -json
 
@@ -126,7 +130,20 @@ TODO(dfc) example output
 
 The go test command accepts a new -list flag, which takes a regular expression as an argument and prints to stdout the name of any tests, benchmarks, or examples that match it, without running them.
 
-TODO(dfc) need example
+ % go test -list Compare bytes
+ TestCompare
+ TestCompareIdenticalSlice
+ TestCompareBytes
+ BenchmarkBytesCompare
+ BenchmarkCompareBytesEqual
+ BenchmarkCompareBytesToNil
+ BenchmarkCompareBytesEmpty
+ BenchmarkCompareBytesIdentical
+ BenchmarkCompareBytesSameLength
+ BenchmarkCompareBytesDifferentLength
+ BenchmarkCompareBytesBigUnaligned
+ BenchmarkCompareBytesBig
+ BenchmarkCompareBytesBigIdentical
 
 * go tool pprof
 
@@ -144,26 +161,24 @@ TODO(dfc) maybe a few % better on amd64.
 
 - Complex division is now C99-compatible. This has always been the case in gccgo and is now fixed in the gc toolchain.
 - The linker will now generate DWARF information for cgo executables on Windows.
-- The compiler now includes lexical scopes in the generated DWARF if the -N -l flags are provided, allowing debuggers to hide variables that are not in scope. The .debug_info section is now DWARF version 4.
+- The compiler now includes lexical scopes in the generated DWARF if the `-N -l` flags are provided, allowing debuggers to hide variables that are not in scope. The `.debug_info` section is now DWARF version 4.
 - The values of `GOARM` and `GO386` now affect a compiled package's build ID, as used by the go tool's dependency caching.
 
 * Runtime changes
 
 * Call stacks with inlined frames 
 
-Users of runtime.Callers should avoid directly inspecting the resulting PC slice and instead use runtime.CallersFrames to get a complete view of the call stack, or runtime.Caller to get information about a single caller. This is because an individual element of the PC slice cannot account for inlined frames or other nuances of the call stack.
+Inlining has historically been limited to leaf functions because of the concern of agressive inlining on the call graph.
 
-Specifically, code that directly iterates over the PC slice and uses functions such as runtime.FuncForPC to resolve each PC individually will miss inlined frames. To get a complete view of the stack, such code should instead use CallersFrames. Likewise, code should not assume that the length returned by Callers is any indication of the call depth. It should instead count the number of frames returned by CallersFrames.
+Robert Griesemer and Matthew Dempsky have been improving the line number tracking in Go 1.9 to make it flexible enough to lift the restriction on non-leaf functions.
+
+Users of runtime.Callers should avoid directly inspecting the resulting PC slice and instead use runtime.CallersFrames. This is because an individual element of the PC slice cannot account for inlined frames or other nuances of the call stack. Specifically, code that directly iterates over the PC slice and uses functions such as runtime.FuncForPC to resolve each PC individually will miss inlined frames.
+
+To get a complete view of the stack, such code should instead use CallersFrames. Likewise, code should not assume that the length returned by Callers is any indication of the call depth. It should instead count the number of frames returned by CallersFrames.
 
 Code that queries a single caller at a specific depth should use Caller rather than passing a slice of length 1 to Callers.
 
 runtime.CallersFrames has been available since Go 1.7, so code can be updated prior to upgrading to Go 1.9.
-
-* Improvements to the inliner
-
-Inlining has historically been limited to leaf functions because of the concern of agressive inlining on the call graph.
-
-In support of this Robert Griesemer and Matthew Dempsky have been improving the line number tracking in Go 1.9 to make it flexible enough to lift the restriction on non-leaf functions.
 
 .link https://github.com/golang/go/issues/17566 Issue 17566
 
@@ -173,7 +188,7 @@ Go has used epoll/kqueue/poll/select for _network_sockets_ for years.
 
 Reads/Writes to other file descriptors have traditionally consumed an OS thread during operation
 
-Ian Lance Taylor landed a refactor that broken our the `runtime` polling subsystem and extended to work for the rest of the `os` package.
+Ian Lance Taylor landed a refactor that broken out the `runtime` polling subsystem and extended to work for the rest of the `os` package.
 
 .link https://go-review.googlesource.com/#/c/36799/ net: refactor poller into new internal/poll package
 .link https://go-review.googlesource.com/#/c/36800/ os: use poller for file I/O 
@@ -182,7 +197,7 @@ There is no sign of a programmer accessible poller, yet.
  
 * Plugins
 
-Not much has changed, still lots to do
+Not much has changed, still lots to do.
 
 * Tool changes
 
@@ -204,6 +219,13 @@ The new methods Duration.Round and Duration.Truncate handle rounding and truncat
 
 .link https://tip.golang.org/pkg/time/#hdr-Monotonic_Clocks
 .link https://golang.org/design/12914-monotonic
+
+* time.String (cont.)
+
+Just as you shouldn't compare `t1 == t2` because they may be in a different timezone, you shouldn't also compare `t1.String() == t2.String()`.
+
+- To compare times, use `time.Equal()`
+- To serialise times, time implements Marshal.
 
 * sync.Map
 
