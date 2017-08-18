@@ -227,7 +227,7 @@ Not much has changed, still lots to do.
 
 David Crawshaw gave a great talk about all the ways that Go code can be built to interact with other languages, and itself (plugins) at GopherCon this year.
 
-.link https://www.youtube.com/watch?v=x-LhC-J2Vbk David Crawshaw - Go Build Modes (GopherCon 2017(
+.link https://www.youtube.com/watch?v=x-LhC-J2Vbk David Crawshaw - Go Build Modes (GopherCon 2017)
 
 # * Tool changes
 
