@@ -150,7 +150,7 @@ The new `go`env`-json` flag enables JSON output, instead of the default OS-speci
         "GOOS": "linux",
         "GOPATH": "/home/dfc",
         "GOROOT": "/home/dfc/go",
-        "GOTOOLDIR": "/home/dfc/go/pkg/tool/linux_amd64",
+        "GOTOOLDIR": "/home/dfc/go/pkg/tool/linux_amd64"
  } 
 
 * go test -list 
