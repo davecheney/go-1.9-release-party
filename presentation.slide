@@ -263,7 +263,7 @@ The new methods Duration.Round and Duration.Truncate handle rounding and truncat
 Just as you shouldn't compare `t1`==`t2` because they may be in a different timezone, you shouldn't also compare `t1.String()`==`t2.String()`.
 
 - To compare times, use `time.Equal()`
-- When serialising `time.Time` values `time.MarshalBinary`, `timet.MarshalJSON`, and `time.MarshalText` elide the monotonic component.
+- When serialising `time.Time` values `time.MarshalBinary`, `time.MarshalJSON`, and `time.MarshalText` elide the monotonic component.
 
 .link https://www.youtube.com/watch?v=OuT8YYAOOVI Joe Tsai, Forward Compatible Go Code (GopherCon 2017)
 
