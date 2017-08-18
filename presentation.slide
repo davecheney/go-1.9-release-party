@@ -25,7 +25,7 @@ But, it is _very_ close, so for all intents and purposes, Go 1.9 is here!
 
 # TODO .link https://t.co/cIEsMPeY0k Go 1.9 Announcement 
 
-Go 1.9 is the 10th release in the Go 1 series. It follows from the previous version, Go 1.8, [[https://blog.golang.org/go1.8][released on the 16th of February, 2016]]
+Go 1.9 is the 10th release in the Go 1 series. It follows from the previous version, Go 1.8, [[https://blog.golang.org/go1.8][released on the 16th of February, 2017]]
 
 .link http://beta.golang.org/doc/go1.9 Draft Go 1.9 Release Notes
 .link https://github.com/golang/go/issues/21297 The last minute blocker
