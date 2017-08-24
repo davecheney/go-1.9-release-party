@@ -19,16 +19,13 @@ If you have suggestions or corrections to this presentation, please raise [[http
 
 * Go 1.9
 
-Go 1.9 isn't released, yet. 🙁
+Go 1.9 is released 🎉
 
-But, it is _very_ close, so for all intents and purposes, Go 1.9 is here!
-
-# TODO .link https://t.co/cIEsMPeY0k Go 1.9 Announcement 
+.link https://blog.golang.org/go1.9 Go 1.9 Announcement 
 
 Go 1.9 is the 10th release in the Go 1 series. It follows from the previous version, Go 1.8, [[https://blog.golang.org/go1.8][released on the 16th of February, 2017]]
 
-.link http://beta.golang.org/doc/go1.9 Draft Go 1.9 Release Notes
-.link https://github.com/golang/go/issues/21297 The last minute blocker
+.link http://golang.org/doc/go1.9 Go 1.9 Release Notes
 
 * What's happened in the last six months?
 
@@ -116,7 +113,7 @@ If you _do_ want to test your code under `vendor/`, you can use something like
  go test ./vendor/...
 
 .link https://github.com/golang/go/issues/19090
-.link https://tip.golang.org/doc/go1.9#vendor-dotdotdot
+.link https://golang.org/doc/go1.9#vendor-dotdotdot
 
 * Default $GOROOT
 
@@ -253,7 +250,7 @@ If a `Time` value has a monotonic clock reading, its string representation (as r
 
 The new methods Duration.Round and Duration.Truncate handle rounding and truncating durations to multiples of a given duration.
 
-.link https://tip.golang.org/pkg/time/#hdr-Monotonic_Clocks
+.link https://golang.org/pkg/time/#hdr-Monotonic_Clocks
 .link https://golang.org/design/12914-monotonic
 
 * time.String (cont.)
@@ -287,7 +284,7 @@ As an experiment in addressing the needs of low level crypto and bit twiddling n
 
 Where implemented by SSA backends, the `math/bits` functions are replaced by a native sequence of instructions. When no specific instruction exists, or is not implemented, the compiler treats the `math/bits` package as normal Go code.
 
-.link https://tip.golang.org/pkg/math/bits/ math/bits
+.link https://golang.org/pkg/math/bits/ math/bits
 
 .play -edit examples/math-bits.go /START/,/END/
 
@@ -307,7 +304,7 @@ Use it to exclude testing helpers from `t.Errorf()` and `t.Fatalf()` tracebacks.
 - `os/user` - `Lookup` and `LookupId` now work on Unix systems when `CGO_ENABLED=0` by reading the `/etc/passwd` file.
 - `text/template` - The handling of empty blocks, which was broken by a Go 1.8 change that made the result dependent on the order of templates, has been fixed.
 
-.link https://tip.golang.org/doc/go1.9#minor_library_changes
+.link https://golang.org/doc/go1.9#minor_library_changes
 
 * dep
 
